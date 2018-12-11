@@ -6,3 +6,4 @@
  * Time: 16:29
  */
 include_once ('function/MainFunction.class.php');
+?>
