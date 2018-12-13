@@ -1,1 +1,0 @@
-<div class="footer">{time_local}</div>
