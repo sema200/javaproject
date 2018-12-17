@@ -1,8 +1,52 @@
-footer {
-    position: absolute;
-    bottom: 0px;
-    right: 5%;
-    background-color: red;
-    width: 90%;
+* {
+    margin: 0;
+    padding: 0;
+}
+.head {
     height: 10%;
+    width: 80%;
+    position: relative;
+    left: 10%;
+    top: 0%;
+    background-color: black;
+}
+body {
+    height: 100%;
+    background-color: aquamarine;
+}
+.content {
+    min-height: 100%;
+}
+.footer {
+    position: absolute;
+    bottom: 0%;
+    right: 10%;
+    background-color: red;
+    width: 80%;
+    height: 10%;
+}
+.mainImage {
+    position: relative;
+    float: left;
+    width: 20%;
+    height: 100%;
+    top: 1%;
+    left: 20%;
+    background-color: red;
+}
+.leftMenu {
+    position: absolute;
+    top: 20%;
+    left: 0%;
+    width: 10%;
+    height: 30%;
+    background-color: coral;
+}
+.leftMenu li {
+    list-style-type: none; /* Убираем маркеры */
+}
+.list {
+    position: relative;
+    left: 10%;
+    top: 15%;
 }

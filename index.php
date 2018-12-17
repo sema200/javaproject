@@ -17,12 +17,12 @@ require_once ('classes/Template.class.php');
 // Производим проверку маршрутизации и включаем необходимые шаблоны
 // Если не один из шаблонов не найден, отправляем клиенту код ошибки и показываем шаблон 404.tpl
 // Если маршрут не задан, выводим главную страницу
-if (isset($_GET['route']) && $_GET['route'] == 'catalog') {
-    $tmpl = new Template('Catalog');
+if (isset($_GET['route']) && $_GET['route'] == 'econom') {
+    $tmpl = new Template('Econom');
     $tmpl->assign('ID', $_GET['ID']);
     $tmpl->render();
-} else if (($_GET['route']) && $_GET['route'] == 'product') {
-    $tmpl = new Template('Catalog');
+} else if (($_GET['route']) && $_GET['route'] == 'security') {
+    $tmpl = new Template('Security');
     $tmpl->assign('ID', $_GET['ID']);
     $tmpl->render();
 } else if (!isset($_GET['route'])) {
@@ -40,4 +40,6 @@ $content = ob_get_clean();
 // Инициализируем шаблон каркаса страницы и выводим ранее сгенерированное содержимое
 $tmpl = new Template('Main');
 $tmpl->assign('content', $content);
+$tmpl->assign('head', $tmpl->getContent('tpl/head.tpl'));
+$tmpl->assign('footer', $tmpl->getContent('tpl/footer.tpl'));
 $tmpl->render();

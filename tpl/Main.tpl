@@ -2,9 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <?php echo $content_head ?>
+    <?php echo $head ?>
 </head>
 <body>
-<?php echo $content_body ?>
+<?php echo $content ?>
 </body>
+<?php echo $footer ?>
 </html>

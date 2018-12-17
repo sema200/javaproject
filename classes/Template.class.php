@@ -19,6 +19,10 @@ class Template {
         $this->_vars[$name] = $value;
     }
 
+    public function getContent($file) {
+        return file_get_contents($file);
+    }
+
     public function render() {
         if (count($this->_vars) > 0) {
             extract($this->_vars);
