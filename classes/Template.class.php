@@ -23,13 +23,15 @@ class Template {
         return file_get_contents($file);
     }
 
-    public function render() {
+    public function render($tmplDir) {
         if (count($this->_vars) > 0) {
             extract($this->_vars);
         }
-
-        $tmplPath = "tpl/{$this->_tmpl}.tpl";
-
+        if($tmplDir) {
+            $tmplPath = "../tpl/{$this->_tmpl}.tpl";
+        } else {
+            $tmplPath = "tpl/{$this->_tmpl}.tpl";
+        }
         if (file_exists($tmplPath)) {
             require $tmplPath;
         } else {

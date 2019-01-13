@@ -27,7 +27,7 @@ class Base
         return true;
     }
     public function close($zapros) {
-        mysql_close ( $zapros );
+//        mysql_close ( $zapros );
     }
     public function __construct($bd, $user, $pass, $localhost) {
         $this->db_name = $bd;
