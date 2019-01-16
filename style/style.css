@@ -116,3 +116,6 @@ body {
     font-weight: bold;
     color: red;
 }
+.inputError {
+    border-color: red;
+}

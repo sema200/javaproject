@@ -1,5 +1,5 @@
 $(document).ready( function () {
-const table = new Table('example', 'zapros.php', {'table': 'clients', 'pole':'*', 'where': '',
+    const table = new Table('example', 'zapros.php', {'table': 'clients', 'pole':'*', 'where': '',
     'if':'', 'attribute':'', 'values':''}, 'content');
 table.start();
 const leftMenu = new LeftMenu('zapros.php', {'table': 'leftMenu', 'pole':'*', 'where': 'where',
@@ -11,6 +11,7 @@ new Button(document.getElementById('add'), 'loadTemplate.php',
     this.addRemoveClass(modalWindow, 'modalWindow');
     this.addRemoveClass(document.getElementById('backModalWindow'), 'backModalWindow');
     if(!document.getElementById('closeModal')) {
+        this.loadScript('js/checkModal.js');
         modalWindow.innerHTML = this.getData(this.data, this.fileName);
         this.newEvent(document.getElementById('closeModal'));
         document.getElementById('modalButton').addEventListener('click', function (ev) {
@@ -49,7 +50,7 @@ new Button(document.getElementById('del'), 'delete.php', function (e) {
     let listUid1 = listUid.map(function (value) { return value.uid });
             console.log(listUid1.join(','));
     this.data = {'table': 'clients', 'where': 'uid', 'attribute':'in', 'values':'('+listUid1.join(',')+')'};
-    if(this.getData(this.data, this.fileName)) {
+    if(!this.getData(this.data, this.fileName)) {
     $('#'+table.id).DataTable().rows('.selected').remove().draw(false);}
         } else {console.log('1');}
     }, table);
@@ -69,7 +70,7 @@ NewObject.prototype.getData = function (data, fileName) {
 //        console.log(xhr.status + " " + xhr.responseText);
         return false;
     } else {
-//        console.log(xhr.responseText);
+        console.log(xhr.responseText);
         try {
             return JSON.parse(xhr.responseText);
         } catch (e) {
@@ -136,6 +137,12 @@ NewObject.prototype.setError = function (element, error) {
     setTimeout(function () {
         element.innerText = '';
     }, 5000);
+}
+NewObject.prototype.loadScript = function importFunction(src){
+    var scriptElem = document.createElement('script');
+    scriptElem.setAttribute('src',src);
+    scriptElem.setAttribute('type','text/javascript');
+    document.getElementsByTagName('head')[0].appendChild(scriptElem);
 }
 function Table( idTables, fileName, data, parentElement) {
     NewObject.call(this, fileName, data);
@@ -234,3 +241,15 @@ function Button(element, filename, eventFunctions) {
 }
 Button.prototype = new NewObject();
 Button.prototype.constructor = Button;
+
+function InputPole (pole, event) {
+    NewObject.call(this);
+    this.elementInput = pole;
+    for (let i=0; i < arguments.length; i++) {
+        if( typeof arguments[i] == 'function') {
+            this.addNewListener(event, arguments[i].bind(this))(pole);
+        }
+    }
+}
+InputPole.prototype = new NewObject();
+InputPole.prototype.constructor = InputPole;
