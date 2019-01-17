@@ -12,7 +12,12 @@ new Button(document.getElementById('add'), 'loadTemplate.php',
     this.addRemoveClass(document.getElementById('backModalWindow'), 'backModalWindow');
     if(!document.getElementById('closeModal')) {
         this.loadScript('js/checkModal.js');
-        modalWindow.innerHTML = this.getData(this.data, this.fileName);
+        if(this.cacheStorage.modalWindow) {
+            modalWindow.innerHTML = this.cacheStorage.modalWindow;
+        } else {
+            this.cacheStorage.modalWindow = this.getData(this.data, this.fileName);
+            modalWindow.innerHTML = this.getData(this.data, this.fileName);
+        }
         this.newEvent(document.getElementById('closeModal'));
         document.getElementById('modalButton').addEventListener('click', function (ev) {
             let dataUser = {
@@ -58,6 +63,7 @@ new Button(document.getElementById('del'), 'delete.php', function (e) {
 function NewObject(fileName, data) {
     this.fileName = fileName;
     this.data = data;
+    this.cacheStorage = {};
 }
 NewObject.prototype.constructor = NewObject;
 NewObject.prototype.getData = function (data, fileName) {
@@ -70,7 +76,7 @@ NewObject.prototype.getData = function (data, fileName) {
 //        console.log(xhr.status + " " + xhr.responseText);
         return false;
     } else {
-        console.log(xhr.responseText);
+//        console.log(xhr.responseText);
         try {
             return JSON.parse(xhr.responseText);
         } catch (e) {
@@ -139,10 +145,23 @@ NewObject.prototype.setError = function (element, error) {
     }, 5000);
 }
 NewObject.prototype.loadScript = function importFunction(src){
-    var scriptElem = document.createElement('script');
-    scriptElem.setAttribute('src',src);
-    scriptElem.setAttribute('type','text/javascript');
-    document.getElementsByTagName('head')[0].appendChild(scriptElem);
+/*    if(!Array.from(document.getElementsByTagName('head')[0].childNodes).some(function (value) {
+        if(value.src && value.src.indexOf(src) != -1) {
+//            document.getElementsByTagName('head')[0].removeChild(value);
+            return true;
+        } else {return false;}
+    })) {*/
+    Array.from(document.getElementsByTagName('head')[0].childNodes).some(function (value) {
+        if(value.src && value.src.indexOf(src) != -1) {
+            document.getElementsByTagName('head')[0].removeChild(value);
+            return true;
+        } else {return false;}
+    })
+        var scriptElem = document.createElement('script');
+        scriptElem.setAttribute('src',src+"?r="+Math.floor(Math.random()*80000));
+        scriptElem.setAttribute('type','text/javascript');
+        document.getElementsByTagName('head')[0].appendChild(scriptElem);
+//    }
 }
 function Table( idTables, fileName, data, parentElement) {
     NewObject.call(this, fileName, data);
