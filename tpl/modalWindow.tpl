@@ -3,6 +3,7 @@
     <div id="uid">
         <label for="uidNumber">UID в системе:</label><div id="uidNumber"><?php echo $uid+1 ?></div>
     </div>
+    <form id="userData">
     <div class="personalData">
         <div><label for="surname">Фамилия:</label><input id="surname" type="text"></div>
         <div><label for="name">Имя:</label><input id="name" type="text"></div>
@@ -17,5 +18,11 @@
     <div id="uidNewUser">
         <button id="modalButton">ВВОД</button>
     </div>
+    </form>
+        <div id="radiusUser">
+            <div class="radiusUser"><label for="login">Логин:</label><div id="login"></div></div>
+            <div id="password" class="radiusUser"><label for="login">Пароль:</label><input type="password"></div>
+        </div>
+
     <div id="modalResult" class="error"></div>
 </div>
