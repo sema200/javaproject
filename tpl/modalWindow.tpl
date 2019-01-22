@@ -15,10 +15,11 @@
         <div><label for="unit">Отдел:</label><input id="unit" type="text"></div>
         <div><label for="email">Электронная почта:</label><input id="email" type="text"></div>
     </div>
+
+    </form>
     <div id="uidNewUser">
         <button id="modalButton">ВВОД</button>
     </div>
-    </form>
         <div id="radiusUser">
             <div class="radiusUser"><label for="login">Логин:</label><div id="login"></div></div>
             <div id="password" class="radiusUser"><label for="login">Пароль:</label><input type="password"></div>

@@ -1,15 +1,15 @@
 $(document).ready(function () {
-    const table = new Table('example', 'zapros.php', {
+    const table = new Table('example', 'zapros.php', {      // главная таблица
         'table': 'clients', 'pole': '*', 'where': '',
         'if': '', 'attribute': '', 'values': ''
     }, 'content');
     table.start();
-    const leftMenu = new LeftMenu('zapros.php', {
+    const leftMenu = new LeftMenu('zapros.php', {           // левое меню
         'table': 'leftMenu', 'pole': '*', 'where': 'where',
         'if': 'page=1 and user_id=1', 'attribute': '', 'values': ''
     }, 'leftMenu');
-    new Button(document.getElementById('add'), 'loadTemplate.php',
-        function (e) {
+    new Button(document.getElementById('add'), 'loadTemplate.php',      // кнопка добавления юзера
+        function (e) {      // обратная функция навешанная на кнопку
             e.stopPropagation();
             let modalWindow = document.getElementById('modalWindow');
             this.addRemoveClass(modalWindow, 'modalWindow');
@@ -23,26 +23,30 @@ $(document).ready(function () {
                     modalWindow.innerHTML = this.getData(this.data, this.fileName);
                 }
                 this.newEvent(document.getElementById('closeModal'));
-/*                Array.from(document.forms.userData).forEach(
-                    function (value) {
-                        console.log(value);
-                    }
-                );*/
+                /*                Array.from(document.forms.userData).forEach(
+                                    function (value) {
+                                        console.log(value);
+                                    }
+                                );*/
                 document.getElementById('modalButton').addEventListener('click', function (ev) {    // вносим данные в БД
                     let dataUser = {
                         "uid": document.getElementById('uidNumber').textContent,
                         "surname": document.getElementById('surname').value,
                         "name": document.getElementById('name').value,
                         "middle_name": document.getElementById('middle_name').value,
-                        "birth": document.getElementById('birth').value,
+                        "birth": this.dateTimeSQL(document.getElementById('birth').value),
                         "phone": document.getElementById('phone').value,
                         "unit": document.getElementById('unit').value,
                         "email": document.getElementById('email').value
                     };
                     if (Array.from(modalWindow.getElementsByTagName('input')).some(function (value) {
-                        return value.className == 'inputError';
-                    })) {
-                        this.setError(document.getElementById('modalResult'), 'Даные не корректны!');
+                            var event = new CustomEvent("checkPole", {
+                                detail: {errorClass: "inputError"}
+                            });
+                            value.dispatchEvent(event);
+                            return value.className == 'inputError';
+                        })) {
+                        this.setError(document.getElementById('modalResult'), 'Данные не корректны!');
                     } else {
 
                         let resultOfNewUser = this.getData(dataUser, 'insert.php');
@@ -60,7 +64,7 @@ $(document).ready(function () {
                 this.clearField(modalWindow);
             }
         }, {'templateName': 'modalWindow', 'ID': ''}, table);
-    new Button(document.getElementById('del'), 'delete.php', function (e) {
+    new Button(document.getElementById('del'), 'delete.php', function (e) {     // кнопка удаления юзера
         e.stopPropagation();
         if ($('#' + table.id).DataTable().rows('.selected')[0].length) {
             let listUid = Object.values($('#' + table.id).DataTable().rows('.selected').data()).filter(function (value) {
@@ -86,14 +90,14 @@ $(document).ready(function () {
     }, table);
 });
 
-function NewObject(fileName, data) {
+function NewObject(fileName, data) {        // основной родитель всех классов
     this.fileName = fileName;
     this.data = data;
     this.cacheStorage = {};
 }
 
 NewObject.prototype.constructor = NewObject;
-NewObject.prototype.getData = function (data, fileName) {
+NewObject.prototype.getData = function (data, fileName) {       // получение данных из БД
     let xhr = new XMLHttpRequest();
     xhr.open('POST', 'obrabotka/' + fileName, false);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -192,6 +196,9 @@ NewObject.prototype.loadScript = function importFunction(src) {
     scriptElem.setAttribute('type', 'text/javascript');
     document.getElementsByTagName('head')[0].appendChild(scriptElem);
 //    }
+}
+NewObject.prototype.dateTimeSQL = function (date) {
+    return date.split('.').reverse().join('-');
 }
 
 function Table(idTables, fileName, data, parentElement) {
@@ -296,7 +303,7 @@ function Button(element, filename, eventFunctions) {
 Button.prototype = new NewObject();
 Button.prototype.constructor = Button;
 
-function InputPole(pole, event) {
+function InputPole(pole, event, flag) {
     NewObject.call(this);
     this.elementInput = pole;
     this.charMassiv = [];
@@ -305,6 +312,21 @@ function InputPole(pole, event) {
             this.addNewListener(event, arguments[i].bind(this))(pole);
         }
     }
+    this.elementInput.addEventListener("checkPole", function (event) {
+        if (flag == 1) {
+            if (this.elementInput.value == "") {
+                if (this.elementInput.className != event.detail.errorClass) {
+                    this.addRemoveClass(this.elementInput, event.detail.errorClass);
+                }
+            } else if (this.elementInput.value != "" && this.elementInput.className == event.detail.errorClass){
+                if (this.elementInput.className == event.detail.errorClass) {
+                    this.addRemoveClass(this.elementInput, event.detail.errorClass);
+                }
+            }
+        }
+    }.bind(this), false);
+
+
 }
 
 InputPole.prototype = new NewObject();
@@ -327,8 +349,8 @@ InputPole.prototype.controlChar = function (regexType, length) {
         if ((!regexType.test(e.target.value.slice(-1)) || e.target.value.length > length) && e.target.value.length != 0) {
             e.target.value = e.target.value.slice(0, -1);
         } else {
-            if(arguments[1]) {
-                if(e.target.value.length > document.getElementById('login').innerText.length) {
+            if (arguments[1]) {
+                if (e.target.value.length > document.getElementById('login').innerText.length) {
                     this.charMassiv.push(arguments[1](e.target.value.slice(-1).toLowerCase()));
                     document.getElementById('login').innerText = this.charMassiv.join('');
                 } else {
