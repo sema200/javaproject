@@ -1,0 +1,84 @@
+---
+- name: test_task
+  hosts: hosts
+  become: yes
+  vars:
+      packages: [ 'zsh', 'nginx', 'wget', 'git' ]
+      kernel_param:
+                fs.file-max: 1204000
+                net.core.somaxconn: 2048
+
+  tasks:
+
+#  - name: check_packages
+#    command: dpkg-query -W "{{ item }}"
+#    with_items: "{{ packages }}"
+#    register: result
+#    ignore_errors: true
+#    tags: check_2
+
+#  - name: install_packages
+#    debug: msg="Packages is`t installed"
+#    when: result is failed
+#    notify: 
+#        - install_pkgs
+#    tags: check_2
+
+  - name: update
+    apt:
+      upgrade: yes
+      update-cache: yes
+    tags:
+      - update_sys
+
+  - name: install_pkgs
+    apt: 
+       name: "{{ item }}"
+       state: latest
+    loop: "{{ packages }}"
+    notify:
+      - start nginx
+    tags:
+      - install_packages
+
+  - name: kernel_set_value
+    sysctl:
+       name: "{{ item.key }}"
+       value: "{{ item.value }}"
+       sysctl_set: yes
+       state: present
+    with_dict: "{{ kernel_param }}"
+    tags: 
+      - kernel_set
+
+  - name: set_pub_keys
+    authorized_key:
+      user: root
+      state: present
+      key: "{{ item }}"
+    with_file:
+      - ./files/root1.pub
+      - ./files/root2.pub
+    tags:
+      - set_key
+
+  - name: get_nginx
+    git:
+      repo: git@github.com:sema200/javaproject.git
+#      dest: /home/sema200/new_git
+      dest: /var/www/html/
+      update: yes
+      version: master
+      accept_hostkey: yes
+      key_file: /home/sema200/.ssh/git_key
+    notify: restart_nginx
+    tags: get_nginx_page
+
+  handlers:
+
+  - name: start nginx
+    service: name=nginx state=started
+
+  - name: restart_nginx
+    service: name=nginx state=restarted
+
